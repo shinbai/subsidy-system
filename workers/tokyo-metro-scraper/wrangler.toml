@@ -1,0 +1,9 @@
+name = "tokyo-metro-scraper"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["30 21 * * *"]  # UTC 21:30 = JST 6:30
+
+[vars]
+SCRAPER_SOURCE = "東京都中小企業振興公社"

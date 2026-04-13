@@ -1,0 +1,9 @@
+name = "jnet21-scraper"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["0 21 * * *"]  # UTC 21:00 = JST 6:00
+
+[vars]
+SCRAPER_SOURCE = "J-Net21"
