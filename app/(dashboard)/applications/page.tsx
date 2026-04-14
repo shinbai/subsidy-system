@@ -1,6 +1,8 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import KanbanBoard from '@/components/application/KanbanBoard'
 import type { ApplicationWithDetails } from '@/components/application/KanbanBoard'
+import Link from 'next/link'
+import { ClipboardList, ArrowRight } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,6 +33,23 @@ export default async function ApplicationsPage() {
     subsidies: undefined,
     locations: undefined,
   }))
+
+  if (formatted.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+        <ClipboardList size={48} className="mx-auto text-gray-300 mb-3" />
+        <p className="text-sm font-medium text-gray-700 mb-1">まだ申請がありません</p>
+        <p className="text-sm text-gray-500 mb-4">補助金一覧から申請を開始してください。</p>
+        <Link
+          href="/subsidies"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1E3A8A] text-white text-sm font-medium rounded-lg hover:bg-[#1E3A8A]/90 transition-colors"
+        >
+          補助金一覧へ
+          <ArrowRight size={16} />
+        </Link>
+      </div>
+    )
+  }
 
   return <KanbanBoard applications={formatted} />
 }

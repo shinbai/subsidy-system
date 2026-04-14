@@ -28,14 +28,14 @@ export interface ApplicationWithDetails extends Application {
 }
 
 // カラム定義
-const COLUMNS: { id: Application['status']; label: string; icon: string; color: string }[] = [
-  { id: 'discovered', label: '発見', icon: '📌', color: 'border-t-gray-400' },
-  { id: 'reviewing', label: '検討中', icon: '🔍', color: 'border-t-blue-400' },
-  { id: 'applying', label: '申請中', icon: '📤', color: 'border-t-yellow-400' },
-  { id: 'reviewing_by_authority', label: '審査中', icon: '⏳', color: 'border-t-orange-400' },
-  { id: 'adopted', label: '採択', icon: '✅', color: 'border-t-green-400' },
-  { id: 'rejected', label: '不採択', icon: '❌', color: 'border-t-red-400' },
-  { id: 'received', label: '入金済', icon: '💰', color: 'border-t-purple-400' },
+const COLUMNS: { id: Application['status']; label: string; icon: string; color: string; description: string }[] = [
+  { id: 'discovered', label: '発見', icon: '📌', color: 'border-t-gray-400', description: '新しく見つけた候補' },
+  { id: 'reviewing', label: '検討中', icon: '🔍', color: 'border-t-blue-400', description: '申請するか検討中' },
+  { id: 'applying', label: '申請中', icon: '📤', color: 'border-t-yellow-400', description: '申請書を提出済み' },
+  { id: 'reviewing_by_authority', label: '審査中', icon: '⏳', color: 'border-t-orange-400', description: '審査機関が審査中' },
+  { id: 'adopted', label: '採択', icon: '✅', color: 'border-t-green-400', description: '採択が決定' },
+  { id: 'rejected', label: '不採択', icon: '❌', color: 'border-t-red-400', description: '不採択' },
+  { id: 'received', label: '入金済', icon: '💰', color: 'border-t-purple-400', description: '補助金が入金済み' },
 ]
 
 interface KanbanBoardProps {
@@ -137,6 +137,7 @@ export default function KanbanBoard({ applications: initialApps }: KanbanBoardPr
               color={column.color}
               items={getColumnItems(column.id)}
               onCardClick={handleCardClick}
+              description={column.description}
             />
           ))}
         </div>

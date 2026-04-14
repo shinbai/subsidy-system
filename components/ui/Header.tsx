@@ -5,22 +5,22 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Menu, LogOut, User } from 'lucide-react'
 
-// パス名からページタイトルを取得
-const pageTitles: Record<string, string> = {
-  '/dashboard': 'ダッシュボード',
-  '/subsidies': '補助金一覧',
-  '/applications': '申請管理',
-  '/drafts': '申請書作成',
-  '/knowledge': 'ナレッジ',
-  '/settings': '設定',
+// パス名からページタイトルと説明を取得
+const pageTitles: Record<string, { title: string; desc: string }> = {
+  '/dashboard': { title: 'ダッシュボード', desc: '補助金の管理状況を一目で確認' },
+  '/subsidies': { title: '補助金一覧', desc: '補助金・助成金の検索・登録' },
+  '/applications': { title: '申請管理', desc: 'Kanbanボードで進捗を管理' },
+  '/drafts': { title: '申請書作成', desc: 'AIで申請書ドラフトを作成' },
+  '/knowledge': { title: 'ナレッジ', desc: '過去の申請実績と学び' },
+  '/settings': { title: '設定', desc: 'システムの各種設定' },
 }
 
-function getPageTitle(pathname: string): string {
+function getPageInfo(pathname: string): { title: string; desc: string } {
   // 完全一致
   if (pageTitles[pathname]) return pageTitles[pathname]
   // 部分一致（/subsidies/xxxなど）
   const base = '/' + pathname.split('/')[1]
-  return pageTitles[base] || 'ページ'
+  return pageTitles[base] || { title: 'ページ', desc: '' }
 }
 
 interface HeaderProps {
@@ -57,9 +57,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
         >
           <Menu size={20} className="text-gray-600" />
         </button>
-        <h1 className="text-lg font-semibold text-gray-900">
-          {getPageTitle(pathname)}
-        </h1>
+        <div>
+          <h1 className="text-lg font-semibold text-gray-900">
+            {getPageInfo(pathname).title}
+          </h1>
+          {getPageInfo(pathname).desc && (
+            <p className="text-xs text-gray-400">{getPageInfo(pathname).desc}</p>
+          )}
+        </div>
       </div>
 
       {/* 右側: ユーザー情報 + ログアウト */}

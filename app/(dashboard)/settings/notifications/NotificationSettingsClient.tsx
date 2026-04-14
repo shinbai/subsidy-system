@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Send, CheckCircle, XCircle, Mail, MessageSquare } from 'lucide-react'
+import { Bell, Send, CheckCircle, XCircle, Mail, MessageSquare, BellOff } from 'lucide-react'
 import Link from 'next/link'
 import type { Notification } from '@/lib/supabase/types'
 
@@ -176,7 +176,10 @@ export default function NotificationSettingsClient({ notifications }: Props) {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">通知履歴はまだありません</p>
+          <div className="text-center py-4">
+            <BellOff size={24} className="mx-auto text-gray-300 mb-2" />
+            <p className="text-sm text-gray-500">通知履歴はまだありません</p>
+          </div>
         )}
       </div>
     </div>

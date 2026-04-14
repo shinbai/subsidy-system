@@ -88,7 +88,13 @@ export default function DraftWizard({ subsidies, locations, organization, templa
             <span className={`text-xs hidden sm:inline ${i === step ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
               {label}
             </span>
-            {i < STEPS.length - 1 && <div className="w-8 h-px bg-gray-300" />}
+            {i < STEPS.length - 1 && (
+              <div className={`w-12 h-0.5 ${
+                i < step ? 'bg-green-500' :
+                i === step ? 'bg-[#1E3A8A]' :
+                'bg-gray-300'
+              }`} />
+            )}
           </div>
         ))}
       </div>

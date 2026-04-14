@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Plus, ExternalLink } from 'lucide-react'
+import { Plus, ExternalLink, Search } from 'lucide-react'
 import { CATEGORY_LABELS, SUBSIDY_STATUS_LABELS } from '@/lib/supabase/types'
 import type { Subsidy } from '@/lib/supabase/types'
 import SubsidyForm from './SubsidyForm'
@@ -31,7 +31,7 @@ function daysUntilDeadline(deadline: string | null): number | null {
 // ステータスバッジ
 function StatusBadge({ status }: { status: Subsidy['status'] }) {
   const colors: Record<string, string> = {
-    open: 'bg-green-100 text-green-700',
+    open: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-600/20',
     closed: 'bg-gray-100 text-gray-700',
     upcoming: 'bg-blue-100 text-blue-700',
     unknown: 'bg-yellow-100 text-yellow-700',
@@ -49,12 +49,17 @@ export default function SubsidyTable({ subsidies }: SubsidyTableProps) {
   const [filterCategory, setFilterCategory] = useState<string>('all')
   const [filterArea, setFilterArea] = useState<string>('all')
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   // フィルタリング
   const filtered = subsidies.filter((s) => {
     if (filterCategory !== 'all' && s.category !== filterCategory) return false
     if (filterArea !== 'all' && s.target_area !== filterArea) return false
     if (filterStatus !== 'all' && s.status !== filterStatus) return false
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      if (!s.name.toLowerCase().includes(q) && !s.authority?.toLowerCase().includes(q)) return false
+    }
     return true
   })
 
@@ -65,7 +70,20 @@ export default function SubsidyTable({ subsidies }: SubsidyTableProps) {
     <div className="space-y-4">
       {/* ヘッダー: フィルターと追加ボタン */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="補助金名・発行機関で検索"
+              className="pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] outline-none w-56"
+            />
+          </div>
+          <span className="text-sm text-gray-500">
+            全{subsidies.length}件中 {filtered.length}件表示
+          </span>
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -137,7 +155,7 @@ export default function SubsidyTable({ subsidies }: SubsidyTableProps) {
                   return (
                     <tr
                       key={subsidy.id}
-                      className="hover:bg-gray-50 cursor-pointer transition-colors"
+                      className="hover:bg-blue-50/50 cursor-pointer transition-colors"
                       onClick={() => router.push(`/subsidies/${subsidy.id}`)}
                     >
                       <td className="px-4 py-3">
@@ -179,7 +197,7 @@ export default function SubsidyTable({ subsidies }: SubsidyTableProps) {
                             )}
                           </div>
                         ) : (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-gray-400">未定</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-center">

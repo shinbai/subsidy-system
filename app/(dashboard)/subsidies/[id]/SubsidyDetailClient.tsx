@@ -21,7 +21,10 @@ interface Props {
 // 金額フォーマット
 function formatAmount(amount: number | null): string {
   if (!amount) return '-'
-  if (amount >= 10000) return `${(amount / 10000).toLocaleString()}万円`
+  if (amount >= 10000) {
+    const man = amount / 10000
+    return `${man.toLocaleString()}万円`
+  }
   return `${amount.toLocaleString()}円`
 }
 
@@ -58,10 +61,10 @@ export default function SubsidyDetailClient({ subsidy, applications, locations }
       <div className="flex items-center justify-between">
         <Link
           href="/subsidies"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 hover:underline"
         >
           <ArrowLeft size={16} />
-          補助金一覧に戻る
+          &larr; 補助金一覧
         </Link>
         <div className="flex items-center gap-2">
           <button
@@ -128,7 +131,7 @@ export default function SubsidyDetailClient({ subsidy, applications, locations }
             <div className="flex items-center gap-2 text-sm">
               <Coins size={16} className="text-gray-400" />
               <span className="text-gray-500">上限金額:</span>
-              <span className="text-gray-900 font-medium">{formatAmount(subsidy.max_amount)}</span>
+              <span className="text-gray-900 text-lg font-bold">{formatAmount(subsidy.max_amount)}</span>
               {subsidy.subsidy_rate && (
                 <span className="text-gray-500">
                   （補助率: {Math.round(subsidy.subsidy_rate * 100)}%）

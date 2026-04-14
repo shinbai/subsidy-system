@@ -1,7 +1,7 @@
 'use client'
 
 import { useDraggable } from '@dnd-kit/core'
-import { Calendar, User, Coins } from 'lucide-react'
+import { Calendar, User, Coins, GripVertical } from 'lucide-react'
 import type { ApplicationWithDetails } from './KanbanBoard'
 
 interface KanbanCardProps {
@@ -48,10 +48,17 @@ export default function KanbanCard({ application, isDragging, onClick }: KanbanC
       onClick={onClick}
       className={`
         bg-white rounded-lg border border-gray-200 p-3 cursor-grab active:cursor-grabbing
-        hover:border-[#1E3A8A]/30 hover:shadow-sm transition-all
+        hover:border-[#1E3A8A]/30 hover:shadow-sm transition-all flex
         ${isDragging ? 'opacity-80 shadow-lg rotate-2 scale-105' : ''}
       `}
     >
+      {/* ドラッグハンドル */}
+      <div className="flex-shrink-0 mr-2 flex items-start pt-0.5">
+        <GripVertical size={16} className="text-gray-300" />
+      </div>
+
+      {/* カードコンテンツ */}
+      <div className="flex-1 min-w-0">
       {/* 補助金名 */}
       <h4 className="text-sm font-medium text-gray-900 leading-snug mb-2">
         {application.subsidy_name || '（補助金名なし）'}
@@ -106,6 +113,7 @@ export default function KanbanCard({ application, isDragging, onClick }: KanbanC
       {/* 最終更新 */}
       <div className="mt-2 pt-2 border-t border-gray-50 text-[10px] text-gray-400">
         更新: {new Date(application.updated_at).toLocaleDateString('ja-JP')}
+      </div>
       </div>
     </div>
   )

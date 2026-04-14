@@ -152,6 +152,11 @@ export default function SubsidyForm({ subsidy, onClose, onSuccess }: SubsidyForm
                 <option value="grant">助成金</option>
                 <option value="loan">融資</option>
               </select>
+              <p className="mt-1 text-xs text-gray-400">
+                {form.category === 'subsidy' && '経済産業省・中小企業庁等が主管する返済不要の資金'}
+                {form.category === 'grant' && '厚生労働省等が主管する要件を満たせば受給できる資金'}
+                {form.category === 'loan' && '金融機関等からの低利の融資制度'}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -259,6 +264,7 @@ export default function SubsidyForm({ subsidy, onClose, onSuccess }: SubsidyForm
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] outline-none"
                 placeholder="例: 2000000"
               />
+              <p className="mt-1 text-xs text-gray-400">※ 円単位で入力してください（例: 200万円の場合は 2000000）</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">補助率</label>

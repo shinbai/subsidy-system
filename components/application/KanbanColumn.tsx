@@ -12,6 +12,7 @@ interface KanbanColumnProps {
   color: string
   items: ApplicationWithDetails[]
   onCardClick: (app: ApplicationWithDetails) => void
+  description?: string
 }
 
 export default function KanbanColumn({
@@ -21,6 +22,7 @@ export default function KanbanColumn({
   color,
   items,
   onCardClick,
+  description,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
@@ -44,6 +46,9 @@ export default function KanbanColumn({
             {items.length}
           </span>
         </div>
+        {description && (
+          <p className="text-xs text-gray-400 mt-1">{description}</p>
+        )}
       </div>
 
       {/* カード一覧 */}

@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -42,7 +44,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* ロゴ・ブランド */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1E3A8A] mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#1E3A8A] shadow-lg mb-4">
             <span className="text-white text-2xl font-bold">DG</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -77,15 +79,24 @@ export default function LoginPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 パスワード
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] outline-none transition-colors text-sm"
-                placeholder="パスワードを入力"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] outline-none transition-colors text-sm"
+                  placeholder="パスワードを入力"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {error && (
@@ -101,10 +112,15 @@ export default function LoginPage() {
             >
               {loading ? 'ログイン中...' : 'ログイン'}
             </button>
+
+            <p className="text-center text-xs text-gray-400 mt-2">
+              Enterキーでもログインできます
+            </p>
           </form>
         </div>
 
-        <p className="text-center text-xs text-gray-400 mt-6">
+        <hr className="mt-6 border-gray-200" />
+        <p className="text-center text-xs text-gray-400 mt-4">
           &copy; 2026 株式会社Gold Phoenix
         </p>
       </div>

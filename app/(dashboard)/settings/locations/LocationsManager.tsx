@@ -133,6 +133,9 @@ export default function LocationsManager({ locations, organizationId }: Props) {
     </div>
   )
 
+  const activeCount = locations.filter(l => l.is_active).length
+  const archivedCount = locations.filter(l => !l.is_active).length
+
   return (
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
@@ -144,6 +147,12 @@ export default function LocationsManager({ locations, organizationId }: Props) {
         <button onClick={() => { setShowAdd(true); resetForm() }} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-[#1E3A8A] rounded-lg hover:bg-[#1E3A8A]/90">
           <Plus size={14} /> 拠点を追加
         </button>
+      </div>
+
+      <div className="flex items-center gap-3 text-sm">
+        <span className="text-gray-700 font-medium">アクティブ <span className="text-[#1E3A8A]">{activeCount}件</span></span>
+        <span className="text-gray-300">/</span>
+        <span className="text-gray-500">アーカイブ {archivedCount}件</span>
       </div>
 
       {showAdd && renderForm(handleAdd, () => setShowAdd(false))}

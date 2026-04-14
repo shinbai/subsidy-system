@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div>
               <div className="text-sm font-bold leading-tight">補助金管理</div>
-              <div className="text-[10px] text-white/60">DANCE GRAND</div>
+              <div className="text-[10px] text-white/60">DANCE GRAND Harajuku</div>
             </div>
           </Link>
           <button onClick={onClose} className="lg:hidden p-1 hover:bg-white/10 rounded">
@@ -66,7 +66,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* ナビゲーション */}
-        <nav className="mt-4 px-3 space-y-1">
+        <nav className="mt-4 px-3 space-y-1.5">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
             const Icon = item.icon
@@ -76,7 +76,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium
                   transition-colors
                   ${isActive
                     ? 'bg-white/20 text-white'

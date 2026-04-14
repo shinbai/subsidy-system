@@ -2,6 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { FileText, Clock, Trophy, Search, Star } from 'lucide-react'
 import { calculateEligibility } from '@/lib/subsidy/eligibility'
 import type { Subsidy, Organization, Location } from '@/lib/supabase/types'
+import Link from 'next/link'
 
 // ビルド時の静的生成を無効化（DB接続が必要なため）
 export const dynamic = 'force-dynamic'
@@ -13,18 +14,18 @@ interface StatCardProps {
   icon: React.ReactNode
   color: string
   subtitle?: string
+  href?: string
 }
 
-function StatCard({ title, value, icon, color, subtitle }: StatCardProps) {
-  return (
+function StatCard({ title, value, icon, color, subtitle, href }: StatCardProps) {
+  const content = (
     <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-gray-400 mt-1">{subtitle}</p>
-          )}
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {value}{subtitle && <span className="text-base font-medium text-gray-500 ml-0.5">{subtitle}</span>}
+          </p>
         </div>
         <div className={`p-3 rounded-lg ${color}`}>
           {icon}
@@ -32,6 +33,11 @@ function StatCard({ title, value, icon, color, subtitle }: StatCardProps) {
       </div>
     </div>
   )
+
+  if (href) {
+    return <Link href={href}>{content}</Link>
+  }
+  return content
 }
 
 export default async function DashboardPage() {
@@ -99,6 +105,7 @@ export default async function DashboardPage() {
           icon={<FileText size={20} className="text-blue-600" />}
           color="bg-blue-50"
           subtitle="件"
+          href="/applications"
         />
         <StatCard
           title="今月の締切"
@@ -106,12 +113,14 @@ export default async function DashboardPage() {
           icon={<Clock size={20} className="text-orange-600" />}
           color="bg-orange-50"
           subtitle="件"
+          href="/subsidies"
         />
         <StatCard
           title="今年の採択総額"
           value={totalAdopted > 0 ? formatAmount(totalAdopted) : '¥0'}
           icon={<Trophy size={20} className="text-green-600" />}
           color="bg-green-50"
+          href="/knowledge"
         />
         <StatCard
           title="未着手の候補"
@@ -119,6 +128,7 @@ export default async function DashboardPage() {
           icon={<Search size={20} className="text-purple-600" />}
           color="bg-purple-50"
           subtitle="件"
+          href="/applications"
         />
       </div>
 
@@ -164,9 +174,17 @@ export default async function DashboardPage() {
             })}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">
-            30日以内に締切の補助金はありません
-          </p>
+          <div>
+            <p className="text-sm text-gray-500">
+              30日以内に締切の補助金はありません
+            </p>
+            <Link
+              href="/subsidies"
+              className="inline-block mt-2 text-sm text-[#1E3A8A] hover:underline"
+            >
+              補助金一覧を確認する &rarr;
+            </Link>
+          </div>
         )}
       </div>
 
@@ -220,7 +238,8 @@ async function RecommendedSubsidies() {
       </h2>
       <div className="space-y-3">
         {scored.map(({ subsidy, eligibility }) => (
-          <div
+          <Link
+            href={`/subsidies/${subsidy.id}`}
             key={subsidy.id}
             className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
           >
@@ -241,7 +260,7 @@ async function RecommendedSubsidies() {
               </p>
             </div>
             <span className="text-sm font-bold text-[#1E3A8A]">{eligibility.score}点</span>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

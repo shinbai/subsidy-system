@@ -58,6 +58,16 @@ export default async function KnowledgePage() {
         </div>
       </div>
 
+      {/* 空状態のヒント */}
+      {totalCount === 0 && adoptedCount === 0 && rejectedCount === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+          <TrendingUp size={20} className="text-blue-500 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-blue-700">
+            申請管理で採択・不採択の記録を開始すると、ナレッジが蓄積されます
+          </p>
+        </div>
+      )}
+
       {/* ナレッジ一覧 */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">ナレッジ一覧</h2>

@@ -80,8 +80,9 @@ export default async function DraftsPage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <FileText size={40} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-sm text-gray-500 mb-4">まだドラフトがありません</p>
+          <FileText size={48} className="mx-auto text-gray-300 mb-3" />
+          <p className="text-sm text-gray-500 mb-1">まだドラフトがありません</p>
+          <p className="text-xs text-gray-400 mb-4">AIが補助金の申請書を自動生成します</p>
           <Link
             href="/drafts/new"
             className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1E3A8A] text-white text-sm font-medium rounded-lg hover:bg-[#1E3A8A]/90"
