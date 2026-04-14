@@ -107,6 +107,63 @@ export async function updateSubsidy(id: string, formData: SubsidyFormData) {
   return { success: true }
 }
 
+// 補助金を一括登録（AI探索結果から）
+export async function bulkCreateSubsidies(subsidies: SubsidyFormData[]) {
+  const supabase = await createServerSupabaseClient()
+
+  // 既存の補助金名を取得して重複チェック
+  const { data: existing } = await (supabase
+    .from('subsidies') as SupabaseAny)
+    .select('name')
+
+  const existingNames = new Set(
+    ((existing || []) as { name: string }[]).map(s => s.name)
+  )
+
+  // 重複を除外
+  const newSubsidies = subsidies.filter(s => !existingNames.has(s.name))
+
+  if (newSubsidies.length === 0) {
+    return { data: [], skipped: subsidies.length }
+  }
+
+  const insertData = newSubsidies.map(s => ({
+    name: s.name,
+    official_name: s.official_name || null,
+    category: s.category,
+    authority: s.authority,
+    authority_url: s.authority_url || null,
+    target_area: s.target_area || null,
+    target_industry: s.target_industry || null,
+    target_size: s.target_size || null,
+    purpose: s.purpose || null,
+    max_amount: s.max_amount || null,
+    subsidy_rate: s.subsidy_rate || null,
+    application_start: s.application_start || null,
+    application_deadline: s.application_deadline || null,
+    announcement_date: s.announcement_date || null,
+    round_number: s.round_number || null,
+    status: s.status || 'open',
+    requirements: s.requirements || null,
+    notes: s.notes || null,
+    source_url: s.source_url || null,
+    is_manually_added: true,
+  }))
+
+  const { data, error } = await (supabase
+    .from('subsidies') as SupabaseAny)
+    .insert(insertData)
+    .select()
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/subsidies')
+  revalidatePath('/dashboard')
+  return { data, skipped: subsidies.length - newSubsidies.length }
+}
+
 // 補助金を削除
 export async function deleteSubsidy(id: string) {
   const supabase = await createServerSupabaseClient()

@@ -7,6 +7,7 @@ import {
   FileText,
   ClipboardList,
   PenTool,
+  MessageCircle,
   BookOpen,
   Settings,
   X,
@@ -18,6 +19,7 @@ const navItems = [
   { href: '/subsidies', label: '補助金一覧', icon: FileText },
   { href: '/applications', label: '申請管理', icon: ClipboardList },
   { href: '/drafts', label: '申請書作成', icon: PenTool },
+  { href: '/chat', label: 'AIアシスタント', icon: MessageCircle },
   { href: '/knowledge', label: 'ナレッジ', icon: BookOpen },
   { href: '/settings', label: '設定', icon: Settings },
 ]

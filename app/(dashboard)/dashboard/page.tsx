@@ -3,6 +3,7 @@ import { FileText, Clock, Trophy, Search, Star } from 'lucide-react'
 import { calculateEligibility } from '@/lib/subsidy/eligibility'
 import type { Subsidy, Organization, Location } from '@/lib/supabase/types'
 import Link from 'next/link'
+import AiSearchButton from '@/components/subsidy/AiSearchButton'
 
 // ビルド時の静的生成を無効化（DB接続が必要なため）
 export const dynamic = 'force-dynamic'
@@ -193,6 +194,12 @@ export default async function DashboardPage() {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* AI補助金探索 */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">補助金を探す</h2>
+        <AiSearchButton />
       </div>
 
       {/* おすすめ補助金（適合スコア上位3件） */}
