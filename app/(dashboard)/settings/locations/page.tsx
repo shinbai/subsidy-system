@@ -10,15 +10,20 @@ type SA = any
 export default async function LocationsSettingsPage() {
   const supabase = await createServerSupabaseClient()
 
-  const { data: locations } = await (supabase.from('locations') as SA)
-    .select('*')
-    .order('is_active', { ascending: false })
-    .order('name')
-
-  const { data: org } = await (supabase.from('organizations') as SA)
-    .select('id')
-    .limit(1)
-    .single()
+  // 全クエリを並列実行
+  const [
+    { data: locations },
+    { data: org },
+  ] = await Promise.all([
+    (supabase.from('locations') as SA)
+      .select('*')
+      .order('is_active', { ascending: false })
+      .order('name'),
+    (supabase.from('organizations') as SA)
+      .select('id')
+      .limit(1)
+      .single(),
+  ])
 
   return (
     <LocationsManager

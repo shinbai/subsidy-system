@@ -43,51 +43,58 @@ function StatCard({ title, value, icon, color, subtitle, href }: StatCardProps) 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient()
 
-  // 申請中の件数
-  const { count: applyingCount } = await supabase
-    .from('applications')
-    .select('*', { count: 'exact', head: true })
-    .in('status', ['applying', 'reviewing_by_authority'])
-
-  // 今月の締切件数
+  // 日付計算（クエリ並列化の前に準備）
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
-  const { count: deadlineCount } = await supabase
-    .from('subsidies')
-    .select('*', { count: 'exact', head: true })
-    .gte('application_deadline', startOfMonth)
-    .lte('application_deadline', endOfMonth)
-    .eq('status', 'open')
-
-  // 今年の採択総額
   const startOfYear = `${now.getFullYear()}-01-01`
-  const { data: adoptedData } = await supabase
-    .from('applications')
-    .select('adopted_amount')
-    .eq('status', 'adopted')
-    .gte('result_date', startOfYear)
+  const thirtyDaysLater = new Date()
+  thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
+
+  // 全クエリを並列実行（シドニーリージョンのレイテンシ対策）
+  const [
+    { count: applyingCount },
+    { count: deadlineCount },
+    { data: adoptedData },
+    { count: discoveredCount },
+    { data: upcomingDeadlines },
+  ] = await Promise.all([
+    // 申請中の件数
+    supabase
+      .from('applications')
+      .select('*', { count: 'exact', head: true })
+      .in('status', ['applying', 'reviewing_by_authority']),
+    // 今月の締切件数
+    supabase
+      .from('subsidies')
+      .select('*', { count: 'exact', head: true })
+      .gte('application_deadline', startOfMonth)
+      .lte('application_deadline', endOfMonth)
+      .eq('status', 'open'),
+    // 今年の採択総額
+    supabase
+      .from('applications')
+      .select('adopted_amount')
+      .eq('status', 'adopted')
+      .gte('result_date', startOfYear),
+    // 未着手の検討候補件数
+    supabase
+      .from('applications')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'discovered'),
+    // 締切間近の補助金（30日以内）
+    supabase
+      .from('subsidies')
+      .select('id, name, authority, application_deadline, max_amount')
+      .eq('status', 'open')
+      .gte('application_deadline', now.toISOString().split('T')[0])
+      .lte('application_deadline', thirtyDaysLater.toISOString().split('T')[0])
+      .order('application_deadline', { ascending: true })
+      .limit(5) as unknown as Promise<{ data: { id: string; name: string; authority: string; application_deadline: string | null; max_amount: number | null }[] | null }>,
+  ])
 
   const totalAdopted = (adoptedData as { adopted_amount: number | null }[] | null)
     ?.reduce((sum, a) => sum + (a.adopted_amount || 0), 0) || 0
-
-  // 未着手の検討候補件数
-  const { count: discoveredCount } = await supabase
-    .from('applications')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'discovered')
-
-  // 締切間近の補助金（30日以内）
-  const thirtyDaysLater = new Date()
-  thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30)
-  const { data: upcomingDeadlines } = await supabase
-    .from('subsidies')
-    .select('id, name, authority, application_deadline, max_amount')
-    .eq('status', 'open')
-    .gte('application_deadline', now.toISOString().split('T')[0])
-    .lte('application_deadline', thirtyDaysLater.toISOString().split('T')[0])
-    .order('application_deadline', { ascending: true })
-    .limit(5) as { data: { id: string; name: string; authority: string; application_deadline: string | null; max_amount: number | null }[] | null }
 
   // 金額フォーマット
   const formatAmount = (amount: number) => {
@@ -198,21 +205,26 @@ export default async function DashboardPage() {
 async function RecommendedSubsidies() {
   const supabase = await createServerSupabaseClient()
 
-  const { data: allSubsidies } = await supabase
-    .from('subsidies')
-    .select('*')
-    .eq('status', 'open')
-
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('*')
-    .limit(1)
-    .single()
-
-  const { data: locations } = await supabase
-    .from('locations')
-    .select('*')
-    .eq('is_active', true)
+  // 全クエリを並列実行
+  const [
+    { data: allSubsidies },
+    { data: org },
+    { data: locations },
+  ] = await Promise.all([
+    supabase
+      .from('subsidies')
+      .select('*')
+      .eq('status', 'open'),
+    supabase
+      .from('organizations')
+      .select('*')
+      .limit(1)
+      .single(),
+    supabase
+      .from('locations')
+      .select('*')
+      .eq('is_active', true),
+  ])
 
   if (!allSubsidies || !org || !locations) return null
 

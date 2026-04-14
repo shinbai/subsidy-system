@@ -14,29 +14,31 @@ export default async function SubsidyDetailPage({ params }: Props) {
   const { id } = await params
   const supabase = await createServerSupabaseClient()
 
-  // 補助金データ取得
-  const { data: subsidy } = await supabase
-    .from('subsidies')
-    .select('*')
-    .eq('id', id)
-    .single()
+  // 全クエリを並列実行
+  const [
+    { data: subsidy },
+    { data: applications },
+    { data: locations },
+  ] = await Promise.all([
+    supabase
+      .from('subsidies')
+      .select('*')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('applications')
+      .select('*')
+      .eq('subsidy_id', id)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('locations')
+      .select('*')
+      .eq('is_active', true),
+  ])
 
   if (!subsidy) {
     notFound()
   }
-
-  // 関連する申請履歴
-  const { data: applications } = await supabase
-    .from('applications')
-    .select('*')
-    .eq('subsidy_id', id)
-    .order('created_at', { ascending: false })
-
-  // 拠点一覧（申請開始時の選択用）
-  const { data: locations } = await supabase
-    .from('locations')
-    .select('*')
-    .eq('is_active', true)
 
   return (
     <SubsidyDetailClient
